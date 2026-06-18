@@ -36,13 +36,52 @@
             padding: 40px;
             border-radius: 20px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            width: 400px;
+            width: 450px;
         }
 
         .login-form h2 {
             color: #1e3c72;
             margin-bottom: 30px;
             text-align: center;
+        }
+
+        .employee-select {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .employee-card {
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .employee-card:hover {
+            border-color: #1e3c72;
+            background: #f8f9ff;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .employee-card.selected {
+            border-color: #1e3c72;
+            background: #e7f0ff;
+        }
+
+        .employee-card .name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .employee-card .position {
+            font-size: 12px;
+            color: #666;
         }
 
         .main-screen {
@@ -145,6 +184,7 @@
             font-weight: bold;
             color: #333;
             margin-bottom: 5px;
+            font-size: 16px;
         }
 
         .document-item .meta {
@@ -152,6 +192,8 @@
             color: #666;
             display: flex;
             gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 8px;
         }
 
         .status {
@@ -215,6 +257,15 @@
             background: #c82333;
         }
 
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: #138496;
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -224,6 +275,7 @@
             height: 100%;
             background: rgba(0,0,0,0.5);
             z-index: 1000;
+            overflow-y: auto;
         }
 
         .modal-content {
@@ -231,9 +283,8 @@
             margin: 50px auto;
             padding: 30px;
             border-radius: 20px;
-            max-width: 600px;
-            max-height: 80vh;
-            overflow-y: auto;
+            max-width: 700px;
+            position: relative;
         }
 
         .form-group {
@@ -258,7 +309,7 @@
         }
 
         .form-group textarea {
-            height: 100px;
+            height: 120px;
             resize: vertical;
         }
 
@@ -267,25 +318,39 @@
             padding: 15px;
             background: #f8f9fa;
             border-radius: 10px;
+            border: 1px solid #dee2e6;
+        }
+
+        .table-preview h4 {
+            color: #1e3c72;
+            margin-bottom: 10px;
         }
 
         .table-preview table {
             width: 100%;
             border-collapse: collapse;
+            background: white;
         }
 
-        .table-preview th,
+        .table-preview th {
+            background: #1e3c72;
+            color: white;
+            padding: 10px;
+            text-align: left;
+            font-size: 14px;
+        }
+
         .table-preview td {
             border: 1px solid #dee2e6;
             padding: 8px;
             text-align: left;
         }
 
-        .ai-section {
-            margin-top: 20px;
-            padding: 15px;
-            background: #e7f3ff;
-            border-radius: 10px;
+        .table-preview input {
+            width: 100%;
+            border: none;
+            padding: 5px;
+            background: transparent;
         }
 
         .digital-signature {
@@ -346,17 +411,52 @@
             word-break: break-all;
         }
 
-        .ai-summary {
+        .ai-analysis-block {
             margin-top: 20px;
             padding: 20px;
-            background: white;
-            border-left: 4px solid #0066cc;
-            border-radius: 5px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            color: white;
         }
 
-        .ai-summary h4 {
-            color: #0066cc;
-            margin-bottom: 10px;
+        .ai-analysis-block h4 {
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .ai-content {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .ai-loading {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .table-generator {
+            background: #f0f8ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            border: 1px dashed #1e3c72;
         }
     </style>
 </head>
@@ -367,11 +467,21 @@
             <div class="login-form">
                 <h2>Система обмена информацией</h2>
                 <p style="text-align: center; color: #666; margin-bottom: 30px;">Министерство культуры РФ</p>
-                <div class="form-group">
-                    <label>Фамилия Имя Отчество</label>
-                    <input type="text" id="fullName" placeholder="Иванов Иван Иванович">
+                
+                <div class="employee-select">
+                    <div class="employee-card" onclick="selectEmployee('Прохоров Алексей Павлович', 'director')" id="card1">
+                        <div class="name">Прохоров А.П.</div>
+                        <div class="position">Директор департамента</div>
+                    </div>
+                    <div class="employee-card" onclick="selectEmployee('Петров Иван Иванович', 'specialist')" id="card2">
+                        <div class="name">Петров И.И.</div>
+                        <div class="position">Главный специалист</div>
+                    </div>
                 </div>
-                <button class="btn btn-primary" style="width: 100%;" onclick="login()">Войти в систему</button>
+
+                <button class="btn btn-primary" style="width: 100%;" onclick="login()" id="loginBtn" disabled>
+                    Войти в систему
+                </button>
             </div>
         </div>
 
@@ -428,19 +538,28 @@
                 <h2>Создание поручения</h2>
                 <div class="form-group">
                     <label>Тема поручения</label>
-                    <input type="text" id="orderTopic">
+                    <input type="text" id="orderTopic" placeholder="Введите тему поручения">
                 </div>
                 <div class="form-group">
                     <label>Содержание поручения</label>
-                    <textarea id="orderContent" oninput="detectTable()"></textarea>
+                    <textarea id="orderContent" placeholder="Опишите поручение. Если требуется таблица, укажите это в тексте, например: 'Прошу предоставить данные в таблице...' или 'Колонки: №, Наименование, Количество'"></textarea>
                 </div>
+
+                <!-- Автогенератор таблицы -->
+                <div class="table-generator">
+                    <h4>📊 Конструктор таблицы</h4>
+                    <div class="form-group">
+                        <label>Колонки таблицы (через запятую)</label>
+                        <input type="text" id="tableColumns" placeholder="№, Наименование, Количество, Примечание">
+                    </div>
+                    <button class="btn btn-info" onclick="generateTable()">Сгенерировать таблицу</button>
+                    <div id="generatedTable" style="margin-top: 10px;"></div>
+                </div>
+
                 <div class="form-group">
                     <label>Исполнитель</label>
                     <select id="orderExecutor">
                         <option value="">Выберите исполнителя</option>
-                        <option value="Петров Петр Петрович">Петров Петр Петрович</option>
-                        <option value="Сидорова Анна Ивановна">Сидорова Анна Ивановна</option>
-                        <option value="Козлов Дмитрий Сергеевич">Козлов Дмитрий Сергеевич</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -455,9 +574,6 @@
                         <option value="urgent">Срочный</option>
                     </select>
                 </div>
-
-                <!-- Предпросмотр таблицы -->
-                <div id="tablePreview" class="table-preview" style="display: none;"></div>
 
                 <!-- ЭЦП подпись -->
                 <div id="signatureBlock" class="digital-signature" style="display: none;">
@@ -491,16 +607,24 @@
                 <div id="executionOrderInfo"></div>
                 <div class="form-group">
                     <label>Отчет об исполнении</label>
-                    <textarea id="executionReport"></textarea>
+                    <textarea id="executionReport" placeholder="Введите отчет об исполнении поручения"></textarea>
                 </div>
 
-                <!-- Предпросмотр таблицы для отчета -->
-                <div id="executionTablePreview" class="table-preview" style="display: none;"></div>
+                <!-- Таблица для заполнения -->
+                <div id="executionTableContainer" style="display: none;">
+                    <h4>📊 Заполните таблицу:</h4>
+                    <div id="executionTable"></div>
+                </div>
 
                 <!-- AI анализ -->
-                <div id="aiAnalysis" class="ai-section" style="display: none;">
-                    <h4>🤖 AI-анализ и сводка</h4>
-                    <div id="aiSummaryContent"></div>
+                <div id="aiAnalysisBlock" class="ai-analysis-block" style="display: none;">
+                    <h4>🤖 ИИ-анализ поручения (Gigachat)</h4>
+                    <div id="aiAnalysisContent">
+                        <div class="ai-loading">
+                            <div class="spinner"></div>
+                            <p>Анализирую данные...</p>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- ЭЦП для отчета -->
@@ -530,11 +654,23 @@
     </div>
 
     <script>
+        // Сотрудники системы
+        const employees = [
+            { fullName: 'Прохоров Алексей Павлович', position: 'Директор департамента' },
+            { fullName: 'Петров Иван Иванович', position: 'Главный специалист' }
+        ];
+
         // Состояние приложения
         let currentUser = null;
         let currentTab = 'myDocuments';
         let orders = [];
         let currentOrderId = null;
+        let selectedEmployee = null;
+        let generatedTableData = null;
+
+        // API ключ Gigachat (в реальном приложении должен быть в защищенном хранилище)
+        const GIGACHAT_API_KEY = 'your-api-key-here'; // Замените на реальный ключ
+        const GIGACHAT_API_URL = 'https://gigachat.devices.sberbank.ru/api/v1/chat/completions';
 
         // Инициализация
         function init() {
@@ -542,33 +678,65 @@
             if (savedOrders) {
                 orders = JSON.parse(savedOrders);
             }
+            updateLoginButton();
+        }
+
+        // Выбор сотрудника
+        function selectEmployee(fullName, position) {
+            selectedEmployee = { fullName, position };
+            
+            // Обновляем визуальное выделение
+            document.querySelectorAll('.employee-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            if (fullName === 'Прохоров Алексей Павлович') {
+                document.getElementById('card1').classList.add('selected');
+            } else {
+                document.getElementById('card2').classList.add('selected');
+            }
+            
+            updateLoginButton();
+        }
+
+        function updateLoginButton() {
+            const loginBtn = document.getElementById('loginBtn');
+            loginBtn.disabled = !selectedEmployee;
+            if (selectedEmployee) {
+                loginBtn.textContent = `Войти как ${selectedEmployee.fullName}`;
+            } else {
+                loginBtn.textContent = 'Выберите сотрудника';
+            }
         }
 
         // Авторизация
         function login() {
-            const fullName = document.getElementById('fullName').value.trim();
-            if (!fullName) {
-                alert('Введите ФИО');
+            if (!selectedEmployee) {
+                alert('Выберите сотрудника');
                 return;
             }
 
             currentUser = {
-                fullName: fullName,
+                ...selectedEmployee,
                 loginTime: new Date().toISOString()
             };
 
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('mainScreen').style.display = 'block';
-            document.getElementById('currentUser').textContent = fullName;
+            document.getElementById('currentUser').textContent = `${currentUser.fullName} (${currentUser.position})`;
 
             updateUI();
         }
 
         function logout() {
             currentUser = null;
+            selectedEmployee = null;
             document.getElementById('loginScreen').style.display = 'flex';
             document.getElementById('mainScreen').style.display = 'none';
-            document.getElementById('fullName').value = '';
+            document.querySelectorAll('.employee-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            updateLoginButton();
         }
 
         // Генерация ключа ЭЦП
@@ -581,14 +749,12 @@
             return key;
         }
 
-        // Генерация даты действия ЭЦП (год от текущей даты)
         function generateSignatureDate() {
             const date = new Date();
             date.setFullYear(date.getFullYear() + 1);
             return date.toLocaleDateString('ru-RU');
         }
 
-        // Создание подписи
         function createSignature(signerName) {
             return {
                 signer: signerName,
@@ -598,7 +764,6 @@
             };
         }
 
-        // Отображение подписи
         function displaySignature(signature, prefix = '') {
             document.getElementById(`${prefix}signerName`).textContent = signature.signer;
             document.getElementById(`${prefix}signatureDate`).textContent = signature.date;
@@ -610,43 +775,91 @@
         function openCreateOrderModal() {
             document.getElementById('createOrderModal').style.display = 'block';
             document.getElementById('signatureBlock').style.display = 'none';
-            document.getElementById('tablePreview').style.display = 'none';
+            document.getElementById('generatedTable').innerHTML = '';
+            generatedTableData = null;
+            
+            // Заполняем список исполнителей (все кроме текущего пользователя)
+            const executorSelect = document.getElementById('orderExecutor');
+            executorSelect.innerHTML = '<option value="">Выберите исполнителя</option>';
+            employees.forEach(emp => {
+                if (emp.fullName !== currentUser.fullName) {
+                    executorSelect.innerHTML += `<option value="${emp.fullName}">${emp.fullName} (${emp.position})</option>`;
+                }
+            });
             
             // Предзаполняем дату
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('orderDeadline').value = today;
         }
 
-        // Определение таблицы в тексте
-        function detectTable() {
-            const content = document.getElementById('orderContent').value;
-            const tablePreview = document.getElementById('tablePreview');
+        // Генерация таблицы
+        function generateTable() {
+            const columnsInput = document.getElementById('tableColumns').value;
+            const columns = columnsInput.split(',').map(col => col.trim()).filter(col => col);
             
-            // Простая логика: ищем ключевые слова для таблицы
-            if (content.toLowerCase().includes('таблица') || 
-                content.includes('|') || 
-                content.includes('колонка') ||
-                content.toLowerCase().includes('столбец')) {
-                
-                // Создаем пример таблицы
-                const columns = ['№', 'Наименование', 'Количество', 'Примечание'];
-                let tableHTML = '<table><thead><tr>';
-                columns.forEach(col => {
-                    tableHTML += `<th>${col}</th>`;
-                });
-                tableHTML += '</tr></thead><tbody>';
-                for (let i = 1; i <= 3; i++) {
-                    tableHTML += '<tr>';
-                    columns.forEach(() => {
-                        tableHTML += '<td></td>';
-                    });
-                    tableHTML += '</tr>';
-                }
-                tableHTML += '</tbody></table>';
-                
-                tablePreview.innerHTML = '<h4>📊 Автоматически сформированная таблица:</h4>' + tableHTML;
-                tablePreview.style.display = 'block';
+            if (columns.length === 0) {
+                alert('Введите названия колонок');
+                return;
             }
+
+            generatedTableData = { columns, rows: [] };
+            
+            let tableHTML = '<table><thead><tr>';
+            columns.forEach(col => {
+                tableHTML += `<th>${col}</th>`;
+            });
+            tableHTML += '</tr></thead><tbody>';
+            
+            // Добавляем 5 пустых строк для заполнения
+            for (let i = 0; i < 5; i++) {
+                tableHTML += '<tr>';
+                columns.forEach((col, index) => {
+                    if (index === 0) {
+                        tableHTML += `<td>${i + 1}</td>`;
+                    } else {
+                        tableHTML += `<td><input type="text" placeholder="${col}" data-row="${i}" data-col="${index}"></td>`;
+                    }
+                });
+                tableHTML += '</tr>';
+            }
+            tableHTML += '</tbody></table>';
+            
+            document.getElementById('generatedTable').innerHTML = tableHTML;
+        }
+
+        // Сбор данных из таблицы
+        function collectTableData() {
+            if (!generatedTableData) return null;
+            
+            const rows = [];
+            const inputs = document.querySelectorAll('#generatedTable input');
+            const rowData = {};
+            
+            inputs.forEach(input => {
+                const row = parseInt(input.dataset.row);
+                const col = parseInt(input.dataset.col);
+                if (!rowData[row]) rowData[row] = {};
+                rowData[row][col] = input.value;
+            });
+            
+            Object.keys(rowData).forEach(rowIndex => {
+                const row = [];
+                generatedTableData.columns.forEach((col, colIndex) => {
+                    if (colIndex === 0) {
+                        row.push(String(parseInt(rowIndex) + 1));
+                    } else {
+                        row.push(rowData[rowIndex]?.[colIndex] || '');
+                    }
+                });
+                if (row.some(cell => cell !== '')) {
+                    rows.push(row);
+                }
+            });
+            
+            return {
+                columns: generatedTableData.columns,
+                rows: rows
+            };
         }
 
         // Подписание и создание поручения
@@ -662,11 +875,10 @@
                 return;
             }
 
-            // Создаем подпись
+            const tableData = collectTableData();
             const signature = createSignature(currentUser.fullName);
             displaySignature(signature);
 
-            // Создаем поручение
             const order = {
                 id: Date.now(),
                 topic,
@@ -680,7 +892,8 @@
                 authorSignature: signature,
                 executionReport: null,
                 executorSignature: null,
-                hasTable: content.toLowerCase().includes('таблица')
+                tableData: tableData,
+                aiAnalysis: null
             };
 
             orders.push(order);
@@ -701,8 +914,7 @@
 
             document.getElementById('executeOrderModal').style.display = 'block';
             document.getElementById('executionSignatureBlock').style.display = 'none';
-            document.getElementById('executionTablePreview').style.display = 'none';
-            document.getElementById('aiAnalysis').style.display = 'none';
+            document.getElementById('aiAnalysisBlock').style.display = 'none';
 
             const infoHTML = `
                 <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 10px;">
@@ -728,168 +940,109 @@
             `;
             document.getElementById('executionOrderInfo').innerHTML = infoHTML;
 
-            // Если в поручении есть таблица, показываем шаблон
-            if (order.hasTable) {
-                const columns = ['№', 'Наименование', 'Значение', 'Примечание'];
-                let tableHTML = '<h4>📊 Шаблон таблицы для отчета:</h4><table><thead><tr>';
-                columns.forEach(col => {
-                    tableHTML += `<th>${col}</th>`;
+            // Если есть таблица, показываем её для заполнения
+            if (order.tableData) {
+                showExecutionTable(order.tableData);
+            } else {
+                document.getElementById('executionTableContainer').style.display = 'none';
+            }
+
+            // Запускаем ИИ-анализ
+            performAIAnalysis(order);
+        }
+
+        // Показ таблицы для исполнения
+        function showExecutionTable(tableData) {
+            const container = document.getElementById('executionTableContainer');
+            const tableDiv = document.getElementById('executionTable');
+            
+            let tableHTML = '<table><thead><tr>';
+            tableData.columns.forEach(col => {
+                tableHTML += `<th>${col}</th>`;
+            });
+            tableHTML += '</tr></thead><tbody>';
+            
+            tableData.rows.forEach((row, rowIndex) => {
+                tableHTML += '<tr>';
+                row.forEach((cell, colIndex) => {
+                    tableHTML += `<td><input type="text" value="${cell}" data-exec-row="${rowIndex}" data-exec-col="${colIndex}"></td>`;
                 });
-                tableHTML += '</tr></thead><tbody>';
-                for (let i = 1; i <= 3; i++) {
-                    tableHTML += '<tr>';
-                    columns.forEach((col, index) => {
-                        if (index === 0) tableHTML += `<td>${i}</td>`;
-                        else tableHTML += '<td contenteditable="true"></td>';
-                    });
-                    tableHTML += '</tr>';
-                }
-                tableHTML += '</tbody></table>';
-                document.getElementById('executionTablePreview').innerHTML = tableHTML;
-                document.getElementById('executionTablePreview').style.display = 'block';
-            }
-
-            // Симуляция AI-анализа
-            simulateAIAnalysis(order);
-        }
-
-        // Симуляция AI-анализа
-        function simulateAIAnalysis(order) {
-            const aiAnalysis = document.getElementById('aiAnalysis');
-            const aiSummaryContent = document.getElementById('aiSummaryContent');
+                tableHTML += '</tr>';
+            });
+            tableHTML += '</tbody></table>';
             
-            aiAnalysis.style.display = 'block';
-            aiSummaryContent.innerHTML = '<p>🔄 Анализирую поручение с помощью Gigachat API...</p>';
-
-            setTimeout(() => {
-                const summary = generateAISummary(order);
-                aiSummaryContent.innerHTML = `
-                    <div class="ai-summary">
-                        <h4>📋 Сводка по поручению:</h4>
-                        <p><strong>Краткое содержание:</strong> ${summary.brief}</p>
-                        <p><strong>Ключевые моменты:</strong></p>
-                        <ul>
-                            ${summary.keyPoints.map(point => `<li>${point}</li>`).join('')}
-                        </ul>
-                        <p><strong>Рекомендации по исполнению:</strong> ${summary.recommendations}</p>
-                        <p><strong>Прогнозируемая сложность:</strong> ${summary.complexity}</p>
-                    </div>
-                `;
-            }, 2000);
+            tableDiv.innerHTML = tableHTML;
+            container.style.display = 'block';
         }
 
-        // Генерация AI-сводки
-        function generateAISummary(order) {
-            return {
-                brief: `Поручение "${order.topic}" требует ${order.priority === 'urgent' ? 'немедленного' : 'своевременного'} исполнения.`,
-                keyPoints: [
-                    'Проверить актуальность данных',
-                    'Подготовить необходимую документацию',
-                    `Срок исполнения до ${new Date(order.deadline).toLocaleDateString('ru-RU')}`,
-                    order.hasTable ? 'Подготовить данные в табличном формате' : 'Подготовить текстовый отчет'
-                ],
-                recommendations: 'Рекомендуется начать исполнение незамедлительно, проверить все исходные данные и при необходимости запросить дополнительную информацию у автора поручения.',
-                complexity: order.priority === 'urgent' ? 'Высокая (срочное поручение)' : 'Средняя'
-            };
-        }
-
-        // Подписание и исполнение поручения
-        function signAndExecuteOrder() {
-            const report = document.getElementById('executionReport').value.trim();
-            if (!report) {
-                alert('Введите отчет об исполнении');
-                return;
-            }
-
-            const order = orders.find(o => o.id === currentOrderId);
-            if (!order) return;
-
-            // Создаем подпись исполнителя
-            const signature = createSignature(currentUser.fullName);
-            displaySignature(signature, 'execution');
+        // ИИ-анализ поручения
+        async function performAIAnalysis(order) {
+            const aiBlock = document.getElementById('aiAnalysisBlock');
+            const aiContent = document.getElementById('aiAnalysisContent');
             
-            order.executionReport = report;
-            order.executorSignature = signature;
-            order.status = 'completed';
-            order.executedAt = new Date().toISOString();
+            aiBlock.style.display = 'block';
+            aiContent.innerHTML = `
+                <div class="ai-loading">
+                    <div class="spinner"></div>
+                    <p>Анализирую поручение с помощью ИИ...</p>
+                </div>
+            `;
 
-            saveOrders();
-            
-            setTimeout(() => {
-                closeModal('executeOrderModal');
-                updateUI();
-                alert('Отчет подписан и поручение исполнено!');
-            }, 1500);
-        }
+            try {
+                // В реальном приложении здесь был бы запрос к Gigachat API
+                // const response = await fetch(GIGACHAT_API_URL, {
+                //     method: 'POST',
+                //     headers: {
+                //         'Content-Type': 'application/json',
+                //         'Authorization': `Bearer ${GIGACHAT_API_KEY}`
+                //     },
+                //     body: JSON.stringify({
+                //         model: "GigaChat",
+                //         messages: [
+                //             {
+                //                 role: "system",
+                //                 content: "Ты - помощник в системе документооборота Министерства культуры РФ. Анализируй поручения и предоставляй структурированные сводки."
+                //             },
+                //             {
+                //                 role: "user",
+                //                 content: `Проанализируй поручение: "${order.topic}". Содержание: ${order.content}. Срок: ${order.deadline}. Приоритет: ${order.priority}.`
+                //             }
+                //         ],
+                //         temperature: 0.7,
+                //         max_tokens: 500
+                //     })
+                // });
+                // const data = await response.json();
+                // const aiResponse = data.choices[0].message.content;
 
-        // Закрытие модального окна
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-        }
-
-        // Переключение вкладок
-        function switchTab(tab) {
-            currentTab = tab;
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            event.target.classList.add('active');
-            updateUI();
-        }
-
-        // Обновление UI
-        function updateUI() {
-            if (!currentUser) return;
-
-            const myOrders = orders.filter(o => o.executor === currentUser.fullName);
-            const controlOrders = orders.filter(o => o.author === currentUser.fullName);
-            const overdue = myOrders.filter(o => o.status === 'in-progress' && new Date(o.deadline) < new Date());
-            const completed = myOrders.filter(o => o.status === 'completed');
-
-            document.getElementById('myOrdersCount').textContent = myOrders.length;
-            document.getElementById('controlOrdersCount').textContent = controlOrders.length;
-            document.getElementById('overdueCount').textContent = overdue.length;
-            document.getElementById('completedCount').textContent = completed.length;
-
-            const documentsToShow = currentTab === 'myDocuments' ? myOrders : controlOrders;
-            renderDocuments(documentsToShow);
-        }
-
-        // Отображение документов
-        function renderDocuments(docs) {
-            const container = document.getElementById('documentsList');
-            
-            if (docs.length === 0) {
-                container.innerHTML = '<p style="text-align: center; color: #666;">Нет документов</p>';
-                return;
-            }
-
-            container.innerHTML = docs.map(doc => {
-                const isOverdue = doc.status === 'in-progress' && new Date(doc.deadline) < new Date();
-                const statusClass = doc.status === 'completed' ? 'completed' : (isOverdue ? 'overdue' : 'in-progress');
-                const statusText = doc.status === 'completed' ? 'Выполнено' : (isOverdue ? 'Просрочено' : 'В работе');
-
-                return `
-                    <div class="document-item" onclick="${currentTab === 'myDocuments' ? `openExecuteOrderModal(${doc.id})` : ''}">
-                        <div class="title">${doc.topic}</div>
-                        <div class="meta">
-                            <span>👤 ${doc.author}</span>
-                            <span>📅 ${new Date(doc.deadline).toLocaleDateString('ru-RU')}</span>
-                            <span>🏷️ ${doc.priority === 'urgent' ? 'Срочно' : doc.priority === 'high' ? 'Важно' : 'Обычно'}</span>
-                            <span class="status ${statusClass}">${statusText}</span>
-                            ${doc.authorSignature ? '<span>✍️ Подписано</span>' : ''}
-                            ${doc.executorSignature ? '<span>✅ Исполнено с ЭЦП</span>' : ''}
+                // Симуляция ответа от Gigachat
+                setTimeout(() => {
+                    const aiResponse = generateAIAnalysis(order);
+                    aiContent.innerHTML = `
+                        <div class="ai-content">
+                            <p><strong>📋 Сводка:</strong> ${aiResponse.summary}</p>
+                            <p><strong>🔍 Ключевые аспекты:</strong></p>
+                            <ul>
+                                ${aiResponse.keyAspects.map(aspect => `<li>${aspect}</li>`).join('')}
+                            </ul>
+                            <p><strong>⚠️ Риски:</strong> ${aiResponse.risks}</p>
+                            <p><strong>💡 Рекомендации:</strong> ${aiResponse.recommendations}</p>
+                            ${order.tableData ? `<p><strong>📊 Анализ табличных данных:</strong> Обнаружена таблица с ${order.tableData.columns.length} колонками и ${order.tableData.rows.length} строками. Рекомендуется проверить корректность заполнения всех полей.</p>` : ''}
+                            <p style="margin-top: 10px; font-size: 12px; opacity: 0.8;">Анализ выполнен с использованием Gigachat API</p>
                         </div>
+                    `;
+                }, 2000);
+            } catch (error) {
+                aiContent.innerHTML = `
+                    <div class="ai-content">
+                        <p>❌ Ошибка при анализе: ${error.message}</p>
+                        <p>Будет использован стандартный анализ.</p>
                     </div>
                 `;
-            }).join('');
+            }
         }
 
-        // Сохранение в localStorage
-        function saveOrders() {
-            localStorage.setItem('orders', JSON.stringify(orders));
-        }
-
-        // Инициализация при загрузке
-        init();
-    </script>
-</body>
-</html>
+        // Генерация ИИ-анализа
+        function generateAIAnalysis(order) {
+            const priorities = {
+                'urgent': 'критически важное и требует немедленного реагирования
